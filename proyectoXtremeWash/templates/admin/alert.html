@@ -1,0 +1,22 @@
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<?php if (isset($alerta['mensaje']) && isset($alerta['tipo'])): ?>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let tipoIcono = '<?php echo $alerta['tipo']; ?>';
+        
+        // Mapeamos los nombres comunes de alertas de PHP a los iconos de SweetAlert2
+        if (tipoIcono === 'danger' || tipoIcono === 'alert') {
+            tipoIcono = 'error';
+        }
+
+        Swal.fire({
+            title: (tipoIcono === 'success') ? '¡Éxito!' : '¡Error!',
+            text: '<?php echo addslashes($alerta['mensaje']); ?>',
+            icon: tipoIcono,
+            confirmButtonColor: '#0d6efd',
+            confirmButtonText: 'Aceptar'
+        });
+    });
+</script>
+<?php endif; ?>

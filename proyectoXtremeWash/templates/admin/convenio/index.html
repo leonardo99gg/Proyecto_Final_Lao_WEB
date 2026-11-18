@@ -1,0 +1,96 @@
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h2 class="fw-bold text-dark"><i class="bi bi-file-earmark-text me-2"></i>Gestión de Convenios de Flotilla</h2>
+        <div>
+            <!-- ✅ 1. Botón hacia el reporte PDF de convenios -->
+            <a href="reporte_convenios_pdf.php" target="_blank" class="btn btn-outline-danger btn-lg me-2 shadow-sm">
+                <i class="fa-solid fa-file-pdf me-2"></i>Reporte PDF
+            </a>
+            <a href="convenio.php?action=create" class="btn btn-primary btn-lg shadow-sm">
+                <i class="bi bi-plus-lg me-2"></i>Registrar Convenio
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body p-3">
+            <!-- ✅ 2. Agregamos id="tablaConvenios" y w-100 -->
+            <table id="tablaConvenios" class="table table-hover align-middle mb-0 w-100">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="py-3 px-4">ID</th>
+                        <th>Empresa</th>
+                        <th>Fecha de Registro</th>
+                        <th>Flotilla</th>
+                        <th>Cant. Vehículos</th>
+                        <th>Estado</th>
+                        <th>Frecuencia</th>
+                        <th>Contrato (PDF)</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (!empty($convenios)): ?>
+                        <?php foreach ($convenios as $c): ?>
+                            <tr>
+                                <td class="px-4 text-muted fw-bold">#<?php echo $c['id_convenio']; ?></td>
+                                <td class="fw-bold text-primary"><i class="bi bi-building me-1"></i> <?php echo htmlspecialchars($c['empresa']); ?></td>
+                                <td>
+                                    <?php if (!empty($c['fecha_registro'])): ?>
+                                        <?php echo date('d/m/Y H:i', strtotime($c['fecha_registro'])); ?>
+                                    <?php else: ?>
+                                        <span class="text-muted">Sin fecha</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td><?php echo htmlspecialchars($c['nombre_flotilla']); ?><br><small class="text-muted"><?php echo htmlspecialchars($c['tipo_vehiculos']); ?></small></td>
+                                <td><span class="badge bg-info text-dark fs-6"><?php echo $c['cantidad_vehiculos']; ?> Unidades</span></td>
+                                <td>
+                                    <?php if (!empty($c['tiene_orden'])): ?>
+                                        <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Ya registrado</span>
+                                    <?php else: ?>
+                                        <span class="badge bg-secondary"><i class="bi bi-hourglass-split me-1"></i>Aún no registrado</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td><span class="badge bg-success"><?php echo htmlspecialchars($c['frecuencia_lavado']); ?></span></td>
+                                
+                                <td>
+                                    <?php if (!empty($c['pdf_contrato'])): ?>
+                                        <a href="../<?php echo htmlspecialchars($c['pdf_contrato']); ?>" target="_blank" class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-filetype-pdf"></i> Ver PDF
+                                        </a>
+                                    <?php else: ?>
+                                        <span class="text-muted small">Sin documento</span>
+                                    <?php endif; ?>
+                                </td>
+                                
+                                <td class="text-center">
+                                    <a href="convenio.php?action=update&id=<?php echo $c['id_convenio']; ?>" class="btn btn-sm btn-outline-primary me-1" title="Editar">
+                                        <i class="bi bi-pencil-square"></i> Editar
+                                    </a>
+                                    <a href="convenio.php?action=delete&id=<?php echo $c['id_convenio']; ?>" onclick="return confirm('¿Eliminar este convenio?');" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ 3. Inicialización de DataTables -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        $('#tablaConvenios').DataTable({
+            "language": {
+                "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+            },
+            "pageLength": 10,
+            "responsive": true
+        });
+    });
+</script>
+
+
