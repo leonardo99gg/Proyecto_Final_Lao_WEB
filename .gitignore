@@ -1,0 +1,63 @@
+# Dependencias
+vendor/
+node_modules/
+
+# Archivos subidos y generados
+uploads/
+storage/
+cache/
+tmp/
+temp/
+*.log
+backups/
+dump/
+
+# Credenciales y configuración local
+config.php
+**/config.php
+!config.example.php
+!**/config.example.php
+.env
+.env.*
+!.env.example
+credentials*.*
+secrets*.*
+passwords*.*
+*.local.php
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+.htpasswd
+.npmrc
+.netrc
+
+# Bases de datos, respaldos y volcados
+*.sql
+*.db
+*.sqlite
+*.sqlite3
+*.bak
+*.backup
+*.dump
+
+# Archivos comprimidos
+*.zip
+*.rar
+*.7z
+*.tar
+*.tar.gz
+
+# Archivos temporales y del sistema
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+*.swo
+
+# IDE y herramientas
+.vscode/
+.idea/
+*.code-workspace

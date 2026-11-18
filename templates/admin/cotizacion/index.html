@@ -1,0 +1,98 @@
+<div class="container-fluid px-4 my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h2 class="fw-bold text-dark"><i class="bi bi-envelope-paper me-2"></i>Cotizaciones</h2>
+        <div>
+            <!-- Botón hacia el reporte general de cotizaciones -->
+            <a href="reporte_cotizaciones_pdf.php" target="_blank" class="btn btn-outline-danger btn-lg me-2 shadow-sm">
+                <i class="fa-solid fa-file-pdf me-2"></i>Reporte PDF
+            </a>
+            <a href="cotizacion.php?action=create" class="btn btn-primary btn-lg shadow-sm">
+                <i class="bi bi-plus-lg me-2"></i>Nueva Cotización Manual
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body p-3">
+            <table id="tablaCotizaciones" class="table table-hover align-middle mb-0 w-100">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="py-3 px-3">Fecha</th>
+                        <th>Empresa / Solicitante</th>
+                        <th>Contacto</th>
+                        <th>Detalles Plan</th>
+                        <th>Foto Patio</th>
+                        <th>Estado Seguimiento</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (!empty($cotizaciones)): ?>
+                        <?php foreach ($cotizaciones as $c): ?>
+                            <tr>
+                                <td class="px-3 text-muted small fw-bold"><?php echo date('d/m/Y H:i', strtotime($c['fecha_solicitud'])); ?></td>
+                                <td>
+                                    <strong class="text-primary"><?php echo htmlspecialchars($c['nombre_empresa']); ?></strong><br>
+                                    <small class="text-muted"><i class="bi bi-person"></i> <?php echo htmlspecialchars($c['nombre_solicitante']); ?></small>
+                                </td>
+                                <td>
+                                    <a href="mailto:<?php echo htmlspecialchars($c['correo_empresarial']); ?>" class="d-block text-decoration-none small"><i class="bi bi-envelope"></i> <?php echo htmlspecialchars($c['correo_empresarial']); ?></a>
+                                    <a href="tel:<?php echo htmlspecialchars($c['telefono_contacto']); ?>" class="d-block text-decoration-none small text-success"><i class="bi bi-whatsapp"></i> <?php echo htmlspecialchars($c['telefono_contacto']); ?></a>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary"><?php echo $c['numero_unidades']; ?> Unidades</span><br>
+                                    <small class="text-muted"><?php echo htmlspecialchars($c['tipo_vehiculos']); ?> - <?php echo htmlspecialchars($c['frecuencia_plan']); ?></small>
+                                </td>
+                                <td>
+                                    <?php if (!empty($c['foto_estacionamiento'])): ?>
+                                        <a href="../<?php echo htmlspecialchars($c['foto_estacionamiento']); ?>" target="_blank">
+                                            <img src="../<?php echo htmlspecialchars($c['foto_estacionamiento']); ?>" width="50" height="50" class="rounded shadow-sm object-fit-cover border">
+                                        </a>
+                                    <?php else: ?>
+                                        <span class="badge bg-light text-dark border">Sin foto</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <form action="cotizacion.php?action=updateEstado&id=<?php echo $c['id_cotizacion']; ?>" method="POST" class="m-0">
+                                        <select name="estado" onchange="this.form.submit()" class="form-select form-select-sm <?php 
+                                            if($c['estado'] == 'Pendiente') echo 'border-warning text-warning fw-bold';
+                                            elseif($c['estado'] == 'Convenio Firmado') echo 'border-success text-success fw-bold';
+                                            elseif($c['estado'] == 'Rechazado') echo 'border-danger text-danger fw-bold';
+                                        ?>">
+                                            <option value="Pendiente" <?php echo ($c['estado'] == 'Pendiente') ? 'selected' : ''; ?>>Pendiente</option>
+                                            <option value="Contactado" <?php echo ($c['estado'] == 'Contactado') ? 'selected' : ''; ?>>Contactado</option>
+                                            <option value="Convenio Firmado" <?php echo ($c['estado'] == 'Convenio Firmado') ? 'selected' : ''; ?>>Convenio Firmado</option>
+                                            <option value="Rechazado" <?php echo ($c['estado'] == 'Rechazado') ? 'selected' : ''; ?>>Rechazado</option>
+                                        </select>
+                                    </form>
+                                </td>
+                                <td class="text-center">
+                                    <a href="cotizacion.php?action=update&id=<?php echo $c['id_cotizacion']; ?>" class="btn btn-sm btn-outline-primary me-1">
+                                        <i class="bi bi-pencil-square"></i> Editar
+                                    </a>
+                                    <a href="cotizacion.php?action=delete&id=<?php echo $c['id_cotizacion']; ?>" onclick="return confirm('¿Eliminar esta solicitud definitivamente?');" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Inicialización de DataTables -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        $('#tablaCotizaciones').DataTable({
+            "language": {
+                "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+            },
+            "pageLength": 10,
+            "responsive": true,
+            "order": [[0, "desc"]]
+        });
+    });
+</script>
