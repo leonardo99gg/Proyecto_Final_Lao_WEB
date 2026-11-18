@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: #f8fafc;
+        }
+
+        .login-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-header p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background-color: #0f172a;
+            color: #ffffff;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .form-group input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+        }
+
+        .form-group input::placeholder {
+            color: #64748b;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #6366f1;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+            margin-top: 0.5rem;
+        }
+
+        .btn-submit:hover {
+            background-color: #4f46e5;
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="login-header">
+            <h2>Recuperar contraseña</h2>
+            <p>Ingresa tu correo para corroborar que existe</p>
+        </div>
+
+        <form action="login.php?accion=validar" method="POST">
+            <div class="form-group">
+                <label for="correo">Correo electrónico</label>
+                <input 
+                    type="email" 
+                    id="correo" 
+                    name="correo" 
+                    autocomplete="email"
+                    placeholder="ejemplo@correo.com" 
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="contrasena">Contraseña</label>
+                <input 
+                    type="password" 
+                    id="contrasena" 
+                    name="contrasena" 
+                    autocomplete=""
+                    placeholder="Ingresa tu contraseña" 
+                    required
+                >
+            </div>
+            <input type="submit" value="iniciar sesion" name="enviar">Iniciar sesion
+
+        </form>
+    </div>
+
+</body>
+</html>

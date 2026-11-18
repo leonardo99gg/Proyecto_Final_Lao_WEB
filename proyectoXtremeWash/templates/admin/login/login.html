@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Iniciar sesión | XtremeWash</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        /* Tema visual alineado con el panel: azul oscuro, cian y superficies claras. */
+        :root {
+            --xw-dark: #1c2833;
+            --xw-dark-deep: #101a24;
+            --xw-cyan: #33c5e5;
+            --xw-cyan-dark: #1199b7;
+            --xw-muted: #6b7b88;
+            --xw-border: #dce5ea;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 2rem 1rem;
+            color: var(--xw-dark);
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background:
+                radial-gradient(circle at 8% 12%, rgba(51, 197, 229, .2), transparent 25rem),
+                linear-gradient(135deg, var(--xw-dark-deep), var(--xw-dark));
+        }
+
+        /* Los círculos decorativos dan profundidad sin modificar el comportamiento del formulario. */
+        .login-shell {
+            position: relative;
+            display: grid;
+            width: min(100%, 980px);
+            min-height: 590px;
+            overflow: hidden;
+            grid-template-columns: .9fr 1.1fr;
+            border: 1px solid rgba(255, 255, 255, .16);
+            border-radius: 24px;
+            box-shadow: 0 2rem 5rem rgba(0, 0, 0, .3);
+        }
+
+        .brand-panel {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            padding: 3rem;
+            color: #fff;
+            background: linear-gradient(155deg, rgba(28, 40, 51, .97), rgba(16, 26, 36, .98));
+        }
+
+        .brand-panel::before,
+        .brand-panel::after {
+            position: absolute;
+            border: 1px solid rgba(51, 197, 229, .3);
+            border-radius: 50%;
+            content: '';
+        }
+
+        .brand-panel::before {
+            width: 360px;
+            height: 360px;
+            right: -190px;
+            top: -130px;
+        }
+
+        .brand-panel::after {
+            width: 260px;
+            height: 260px;
+            bottom: -140px;
+            left: -150px;
+        }
+
+        .brand-content,
+        .brand-footer {
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand-icon {
+            display: grid;
+            width: 68px;
+            height: 68px;
+            place-items: center;
+            margin-bottom: 2rem;
+            color: var(--xw-dark);
+            font-size: 1.75rem;
+            border-radius: 18px;
+            background: var(--xw-cyan);
+            box-shadow: 0 .75rem 1.5rem rgba(51, 197, 229, .25);
+        }
+
+        .brand-name {
+            margin: 0 0 .75rem;
+            color: var(--xw-cyan);
+            font-size: 1.05rem;
+            font-weight: 800;
+            letter-spacing: .12em;
+        }
+
+        .brand-panel h1 {
+            max-width: 330px;
+            margin: 0 0 1rem;
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            line-height: 1.1;
+        }
+
+        .brand-panel p {
+            max-width: 340px;
+            color: rgba(255, 255, 255, .68);
+            line-height: 1.7;
+        }
+
+        .brand-footer {
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+            color: rgba(255, 255, 255, .6);
+            font-size: .82rem;
+        }
+
+        .brand-footer i {
+            color: var(--xw-cyan);
+        }
+
+        .form-panel {
+            display: flex;
+            align-items: center;
+            padding: 3rem clamp(2rem, 6vw, 5rem);
+            background: #fff;
+        }
+
+        .form-content {
+            width: 100%;
+            max-width: 390px;
+            margin: auto;
+        }
+
+        .eyebrow {
+            margin-bottom: .65rem;
+            color: var(--xw-cyan-dark);
+            font-size: .75rem;
+            font-weight: 800;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+        }
+
+        .form-content h2 {
+            margin: 0 0 .6rem;
+            color: var(--xw-dark);
+            font-size: 2rem;
+        }
+
+        .form-intro {
+            margin: 0 0 2rem;
+            color: var(--xw-muted);
+            font-size: .92rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: .55rem;
+            color: var(--xw-dark);
+            font-size: .86rem;
+            font-weight: 600;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap i {
+            position: absolute;
+            z-index: 1;
+            top: 50%;
+            left: 1rem;
+            color: var(--xw-cyan-dark);
+            transform: translateY(-50%);
+        }
+
+        .form-group input {
+            width: 100%;
+            min-height: 52px;
+            padding: .8rem 1rem .8rem 2.8rem;
+            color: var(--xw-dark);
+            font: inherit;
+            font-size: .92rem;
+            border: 1px solid var(--xw-border);
+            border-radius: 12px;
+            outline: 0;
+            background: #fbfdfe;
+            transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+        }
+
+        .form-group input:focus {
+            border-color: var(--xw-cyan);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(51, 197, 229, .16);
+        }
+
+        .form-group input::placeholder {
+            color: #9aa8b1;
+        }
+
+        .btn-submit {
+            width: 100%;
+            min-height: 52px;
+            margin-top: .35rem;
+            padding: .8rem 1rem;
+            color: #fff;
+            font: inherit;
+            font-size: .92rem;
+            font-weight: 700;
+            border: 0;
+            border-radius: 12px;
+            cursor: pointer;
+            background: var(--xw-cyan-dark);
+            box-shadow: 0 .6rem 1.2rem rgba(17, 153, 183, .2);
+            transition: background-color .2s ease, transform .2s ease, box-shadow .2s ease;
+        }
+
+        .btn-submit:hover {
+            background: #0c87a3;
+            box-shadow: 0 .8rem 1.5rem rgba(17, 153, 183, .3);
+            transform: translateY(-1px);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .forgot-link {
+            display: block;
+            margin-top: 1.25rem;
+            color: var(--xw-cyan-dark);
+            font-size: .83rem;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .forgot-link:hover {
+            color: var(--xw-dark);
+            text-decoration: underline;
+        }
+
+        .alert-message {
+            margin-bottom: 1.25rem;
+            padding: .8rem 1rem;
+            color: #842029;
+            font-size: .85rem;
+            border: 1px solid #f1aeb5;
+            border-radius: 10px;
+            background: #f8d7da;
+        }
+
+        @media (max-width: 720px) {
+            .login-shell {
+                display: block;
+                min-height: auto;
+            }
+
+            .brand-panel {
+                min-height: 260px;
+                padding: 2rem;
+            }
+
+            .brand-footer {
+                margin-top: 2rem;
+            }
+
+            .form-panel {
+                padding: 2.5rem 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="login-shell">
+        <section class="brand-panel">
+            <div class="brand-content">
+                <div class="brand-icon"><i class="fa-solid fa-car-on" aria-hidden="true"></i></div>
+                <p class="brand-name">XTREMEWASH</p>
+                <h1>Tu operación, siempre en movimiento.</h1>
+                <p>Administra servicios, clientes y órdenes desde un solo lugar.</p>
+            </div>
+            <div class="brand-footer">
+                <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+                <span>Acceso exclusivo para personal autorizado</span>
+            </div>
+        </section>
+
+        <section class="form-panel">
+            <div class="form-content">
+                <p class="eyebrow">Panel administrativo</p>
+                <h2>Bienvenido de nuevo</h2>
+                <p class="form-intro">Ingresa tus credenciales para continuar.</p>
+
+                <?php if (isset($alerta)): ?>
+                    <div class="alert-message">
+                        <?= htmlspecialchars($alerta['mensaje']) ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php require __DIR__ . '/../alert.html'; ?>
+
+                <!-- La acción, método y nombres de campos se conservan sin cambios. -->
+                <form action="login.php?accion=validar" method="POST">
+                    <div class="form-group">
+                        <label for="correo">Correo electrónico</label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+                            <input type="email" id="correo" name="correo" autocomplete="email"
+                                   placeholder="ejemplo@correo.com" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contrasena">Contraseña</label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-lock" aria-hidden="true"></i>
+                            <input type="password" id="contrasena" name="contrasena"
+                                   autocomplete="" placeholder="Ingresa tu contraseña" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" name="enviar" class="btn-submit">
+                        <i class="fa-solid fa-right-to-bracket me-2" aria-hidden="true"></i>Iniciar sesión
+                    </button>
+                    <a href="login.php?accion=recuperar" class="forgot-link">¿Olvidaste la contraseña?</a>
+                </form>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

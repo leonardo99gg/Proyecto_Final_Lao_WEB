@@ -1,0 +1,160 @@
+<style>
+    /* Estilo para que el calendario ocupe bien su tarjeta */
+    .flatpickr-calendar.inline {
+        width: 100% !important;
+        box-shadow: none !important;
+        border: 1px solid #dee2e6;
+        border-radius: 0.75rem;
+    }
+    /* Indicador visual (punto azul) en los días que tienen visitas */
+    .tiene-evento {
+        position: relative;
+        font-weight: bold;
+        background-color: #e0f7fa !important;
+        border-color: #33C5E5 !important;
+        color: #006064 !important;
+    }
+    .tiene-evento::after {
+        content: '';
+        position: absolute;
+        bottom: 3px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background-color: #0d6efd;
+    }
+</style>
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h2 class="fw-bold text-dark"><i class="fa-solid fa-calendar-days me-2 text-primary"></i>Agenda de Visitas Pendientes</h2>
+        <a href="orden.php?action=create" class="btn btn-primary shadow-sm">
+            <i class="bi bi-plus-lg me-2"></i>Agendar Nueva Visita
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <!-- Columna Izquierda: Calendario Flatpickr Siempre Visible -->
+        <div class="col-md-5 col-lg-4">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-dark text-white rounded-top-4 py-3">
+                    <h5 class="mb-0"><i class="fa-regular fa-calendar me-2"></i>Selecciona una Fecha</h5>
+                </div>
+                <div class="card-body p-3">
+                    <!-- Input oculto donde Flatpickr renderiza el calendario inline -->
+                    <input type="text" id="calendarioAgenda" class="d-none">
+                    <div class="mt-3 small text-muted text-center">
+                        <span class="badge bg-info text-dark me-1">&nbsp;</span> Días con visitas programadas
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Lista de Visitas del Día Seleccionado -->
+        <div class="col-md-7 col-lg-8">
+            <div class="card shadow-sm border-0 rounded-4 h-100">
+                <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold text-dark">
+                        Visitas para el: <span id="tituloFechaSeleccionada" class="text-primary">Hoy</span>
+                    </h5>
+                    <span id="contadorVisitas" class="badge bg-primary rounded-pill">0 visitas</span>
+                </div>
+                <div class="card-body p-4" id="contenedorVisitas">
+                    <!-- Aquí se cargan dinámicamente las tarjetas con JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 1. Recibimos los eventos desde PHP
+        const eventos = <?php echo json_encode($eventos); ?>;
+
+        // 2. Obtenemos la lista única de fechas que tienen órdenes
+        const fechasConEventos = [...new Set(eventos.map(e => e.fecha))];
+
+        // 3. Función para pintar las tarjetas del día seleccionado
+        function mostrarVisitasDelDia(fechaStr) {
+            const contenedor = document.getElementById('contenedorVisitas');
+            const tituloFecha = document.getElementById('tituloFechaSeleccionada');
+            const contador = document.getElementById('contadorVisitas');
+
+            // Formatear fecha bonita para el título (DD/MM/YYYY)
+            const partes = fechaStr.split('-');
+            tituloFecha.textContent = `${partes[2]}/${partes[1]}/${partes[0]}`;
+
+            // Filtrar órdenes de ese día
+            const visitasDia = eventos.filter(e => e.fecha === fechaStr);
+            contador.textContent = `${visitasDia.length} visita(s)`;
+
+            if (visitasDia.length === 0) {
+                contenedor.innerHTML = `
+                    <div class="text-center py-5 text-muted">
+                        <i class="fa-regular fa-calendar-check fs-1 mb-3 d-block text-secondary"></i>
+                        <h5>No hay visitas programadas para este día</h5>
+                        <p class="small">Selecciona un día marcado en azul en el calendario o agenda una nueva visita.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Construir las tarjetas de cada visita
+            let html = '';
+            visitasDia.forEach(v => {
+                let badgeColor = 'bg-warning text-dark';
+                if (v.estado === 'Finalizada') badgeColor = 'bg-success';
+                if (v.estado === 'En Proceso') badgeColor = 'bg-info text-dark';
+
+                html += `
+                    <div class="card mb-3 border shadow-sm rounded-3">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="d-flex align-items-center mb-1">
+                                    <span class="badge bg-dark me-2">Folio #${v.id}</span>
+                                    <span class="text-muted fw-bold"><i class="fa-regular fa-clock me-1"></i>${v.hora} hrs</span>
+                                </div>
+                                <h5 class="fw-bold text-primary mb-1">${v.empresa}</h5>
+                                <p class="mb-0 text-success fw-bold">Total: $${v.total}</p>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge ${badgeColor} fs-6 mb-2 d-block">${v.estado}</span>
+                                <a href="orden.php?action=update&id=${v.id}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-pencil"></i> Gestionar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            contenedor.innerHTML = html;
+        }
+
+        // 4. Inicializar Flatpickr en modo INLINE (siempre visible)
+        flatpickr("#calendarioAgenda", {
+            inline: true,
+            locale: "es",
+            dateFormat: "Y-m-d",
+            defaultDate: "today",
+            // Resaltar días con visitas
+            onDayCreate: function(dObj, dStr, fp, dayElem) {
+                const fechaDia = dayElem.dateObj.toISOString().split('T')[0];
+                if (fechasConEventos.includes(fechaDia)) {
+                    dayElem.classList.add('tiene-evento');
+                }
+            },
+            // Actualizar panel derecho al hacer clic en un día
+            onChange: function(selectedDates, dateStr) {
+                mostrarVisitasDelDia(dateStr);
+            }
+        });
+
+        // Cargar las visitas de hoy al abrir la página
+        const hoy = new Date().toISOString().split('T')[0];
+        mostrarVisitasDelDia(hoy);
+    });
+</script>

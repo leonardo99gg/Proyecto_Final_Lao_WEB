@@ -1,0 +1,315 @@
+<?php
+// Transformación de datos PHP de Órdenes a matriz de Google Charts
+$chartEstadoRows = [['Estado', 'Cantidad']];
+if (!empty($dataEstado)) {
+    foreach ($dataEstado as $row) {
+        $chartEstadoRows[] = [(string)$row['estado'], (int)$row['cantidad']];
+    }
+}
+
+// Transformación de datos PHP de Vehículos a matriz de Google Charts
+$chartTipoRows = [['Tipo', 'Total']];
+if (!empty($dataTipo)) {
+    foreach ($dataTipo as $row) {
+        $chartTipoRows[] = [(string)$row['tipo_vehiculos'], (int)$row['cantidad']];
+    }
+}
+
+$charServRows = [['Servicio', 'Precio']];
+if (!empty($dataServ)) {
+    foreach ($dataServ as $row) {
+        $charServRows[] = [(string)$row['nombre'], (float)$row['precio']];
+    }
+}
+
+$charCotRows = [['nombre_empresa', 'Nombres']];
+if (!empty($dataCotizaciones)) {
+    foreach ($dataCotizaciones as $row) {
+        $charCotRows[] = [(string)$row['nombre_empresa'], (int)$row['nombre']];
+    }
+}
+?>
+
+<style>
+    .kpi-card {
+        border: 0;
+        border-radius: 0.75rem;
+        transition: transform 0.2s ease-in-out;
+    }
+    .kpi-card:hover {
+        transform: translateY(-3px);
+    }
+    .chart-card {
+        border: 0;
+        border-radius: 1rem;
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+    .chart-card .card-header {
+        border: 0;
+        padding: 1rem 1.25rem;
+    }
+    .chart-container {
+        height: 320px;
+        width: 100%;
+    }
+</style>
+
+<main class="container-fluid py-4">
+    <!-- ENCABEZADO PRINCIPAL -->
+    <div class="card card-xw-cyan p-4 mb-4 text-center shadow-sm">
+        <h1 class="display-5 fw-bold mb-2">Panel de Control</h1>
+        <p class="fs-5 mb-0">Visión general y gestión de operaciones de XtremeWash</p>
+    </div>
+
+    <!-- SECCIÓN 1: TARJETAS KPI -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card kpi-card card-xw-white p-3 shadow-sm border-start border-4 border-info text-center">
+                <div class="card-body p-2">
+                    <span class="text-muted small fw-bold text-uppercase">Clientes Registrados</span>
+                    <h2 class="display-6 fw-bold mb-0 text-dark"><?php echo $totalClientes ?? 0; ?></h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card kpi-card card-xw-cyan p-3 shadow-sm text-center">
+                <div class="card-body p-2">
+                    <span class="text-dark small fw-bold text-uppercase">Órdenes Activas</span>
+                    <h2 class="display-6 fw-bold mb-0 text-dark"><?php echo $ordenesActivas ?? 0; ?></h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card kpi-card card-xw-white p-3 shadow-sm border-start border-4 border-dark text-center">
+                <div class="card-body p-2">
+                    <span class="text-muted small fw-bold text-uppercase">Grupos de flotillas</span>
+                    <h2 class="display-6 fw-bold mb-0 text-dark"><?php echo $totalVehiculos ?? 0; ?></h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+                <div class="card kpi-card card-xw-cyan p-3 shadow-sm text-center">
+                    <div class="card-body p-2">
+                        <span class="text-dark small fw-bold text-uppercase">Tipos de Servicios</span>
+                        <h2 class="display-6 fw-bold mb-0 text-dark"><?php echo $totalServicios ?? 0; ?></h2>
+                    </div>
+                </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card kpi-card card-xw-white p-3 shadow-sm border-start border-4 border-info text-center">
+                <div class="card-body p-2">
+                    <span class="text-muted small fw-bold text-uppercase">Numero total de cotizaciones</span>
+                    <h2 class="display-6 fw-bold mb-0 text-dark"><?php echo $totalCotizaciones ?? 0; ?></h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 2: GRÁFICAS -->
+    <div class="row g-4 mb-5">
+        <!-- GRÁFICA MANUAL: Órdenes por Estado -->
+        <div class="col-lg-6">
+            <div class="card chart-card h-100">
+                <div class="card-header card-xw-cyan">
+                    <h5 class="fw-bold mb-0">Órdenes de Servicio por Estado</h5>
+                    <small class="text-dark">Procesamiento manual desde ordenes_visita</small>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <?php if (count($chartEstadoRows) > 1): ?>
+                        <div id="chart_estado" class="chart-container"></div>
+                    <?php else: ?>
+                        <p class="text-muted mb-0">No hay órdenes registradas para graficar.</p>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+
+        <!-- GRÁFICA ADICIONAL: Distribución por Tipo de Vehículo -->
+        <div class="col-lg-6">
+            <div class="card chart-card h-100">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="fw-bold mb-0">Distribución por flotillas</h5>
+                    <small class="text-light">Proporción registrada en convenios_flotilla</small>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <?php if (count($chartTipoRows) > 1): ?>
+                        <div id="chart_tipo_vehiculo" class="chart-container"></div>
+                    <?php else: ?>
+                        <p class="text-muted mb-0">No hay vehículos registrados para graficar.</p>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card chart-card h-100">
+                <div class="card-header card-xw-cyan">
+                    <h5 class="fw-bold mb-0">Servicios y Precios</h5>
+                    <small class="text-dark">Listado de servicios con sus respectivos precios</small>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <?php if (count($charServRows) > 1): ?>
+                        <div id="chart_servicios" class="chart-container"></div>
+                    <?php else: ?>
+                        <p class="text-muted mb-0">No hay servicios registrados para graficar.</p>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card chart-card h-100">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="fw-bold mb-0">Cotizaciones por Empresa</h5>
+                    <small class="text-light">Total de solicitudes registradas por cliente</small>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <?php if (count($charCotRows) > 1): ?>
+                        <div id="chart_cotizaciones" class="chart-container"></div>
+                    <?php else: ?>
+                        <p class="text-muted mb-0">No hay cotizaciones registradas para graficar.</p>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 3: MÓDULOS DE NAVEGACIÓN -->
+    <h3 class="fw-bold mb-3" style="color: var(--xw-dark-blue);">Catálogos y Módulos</h3>
+    <div class="row g-4 justify-content-center mb-4">
+        <!-- Clientes -->
+        <div class="col-md-4">
+            <div class="card card-xw-white h-100 p-3 shadow-sm text-center">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="card-title fw-bold" style="color: var(--xw-dark-blue);">Clientes</h3>
+                    <p class="card-text text-muted flex-grow-1">Alta, consulta, edición y baja de clientes registrados en el sistema.</p>
+                    <a href="cliente.php" class="btn btn-xw-cyan w-100 py-2 mt-3">Ir a Clientes</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Convenios -->
+        <div class="col-md-4">
+            <div class="card card-xw-cyan h-100 p-3 shadow-sm text-center">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="card-title fw-bold">Convenios</h3>
+                    <p class="card-text flex-grow-1">Registro de autos, motos y camionetas asociados a sus respectivos dueños.</p>
+                    <a href="convenio.php" class="btn btn-dark w-100 py-2 mt-3">Ir a los convenios</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Órdenes -->
+        <div class="col-md-4">
+            <div class="card card-xw-white h-100 p-3 shadow-sm text-center">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="card-title fw-bold" style="color: var(--xw-dark-blue);">Órdenes de Servicio</h3>
+                    <p class="card-text text-muted flex-grow-1">Genera tickets y controla el flujo de trabajo (Pendiente, En Proceso, Listo).</p>
+                    <a href="orden.php" class="btn btn-xw-cyan w-100 py-2 mt-3">Ir a Órdenes</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Servicios -->
+        <div class="col-md-4">
+            <div class="card card-xw-white h-100 p-3 shadow-sm text-center">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="card-title fw-bold" style="color: var(--xw-dark-blue);">Tipos de servicios</h3>
+                    <p class="card-text text-muted flex-grow-1">Ver los distinto tipos de servicios disponibles de lavado.</p>
+                    <a href="servicio.php" class="btn btn-xw-cyan w-100 py-2 mt-3">Ir a Servicios</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cotizaciones -->
+        <div class="col-md-4">
+            <div class="card card-xw-white h-100 p-3 shadow-sm text-center">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="card-title fw-bold" style="color: var(--xw-dark-blue);">Cotizaciones</h3>
+                    <p class="card-text text-muted flex-grow-1">Genera cotizaciones para nuevos clientes o servicios adicionales.</p>
+                    <a href="cotizacion.php" class="btn btn-xw-cyan w-100 py-2 mt-3">Ir a Cotizaciones</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- SCRIPTS DE GOOGLE CHARTS -->
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+<script>
+    google.charts.load('current', { packages: ['corechart'] });
+    google.charts.setOnLoadCallback(drawDashboardCharts);
+
+    const dataEstadoRaw = <?php echo json_encode($chartEstadoRows, JSON_UNESCAPED_UNICODE); ?>;
+    const dataTipoRaw = <?php echo json_encode($chartTipoRows, JSON_UNESCAPED_UNICODE); ?>;
+    const dataServRaw = <?php echo json_encode($charServRows, JSON_UNESCAPED_UNICODE); ?>;
+    const dataCotRaw = <?php echo json_encode($charCotRows, JSON_UNESCAPED_UNICODE); ?>;
+
+    function drawDashboardCharts() {
+        if (dataEstadoRaw.length > 1) {
+            const dataEstado = google.visualization.arrayToDataTable(dataEstadoRaw);
+            const optionsEstado = {
+                chartArea: { width: '80%', height: '70%' },
+                colors: ['#0dcaf0'],
+                hAxis: { title: 'Estado' },
+                vAxis: { minValue: 0, format: '0' },
+                legend: { position: 'none' },
+                fontName: 'inherit'
+            };
+            const chartEstado = new google.visualization.ColumnChart(document.getElementById('chart_estado'));
+            chartEstado.draw(dataEstado, optionsEstado);
+        }
+
+        if (dataTipoRaw.length > 1) {
+            const dataTipo = google.visualization.arrayToDataTable(dataTipoRaw);
+            const optionsTipo = {
+                pieHole: 0.4,
+                chartArea: { width: '90%', height: '80%' },
+                colors: ['#0d6efd', '#212529', '#0dcaf0'],
+                legend: { position: 'right' },
+                fontName: 'inherit'
+            };
+            const chartTipo = new google.visualization.PieChart(document.getElementById('chart_tipo_vehiculo'));
+            chartTipo.draw(dataTipo, optionsTipo);
+        }
+
+        if (dataServRaw.length > 1) {
+            const dataServ = google.visualization.arrayToDataTable(dataServRaw);
+            const optionsServ = {
+                chartArea: { width: '60%', height: '75%' },
+                colors: ['#0dcaf0'],
+                hAxis: { title: 'Precio', minValue: 0 },
+                legend: { position: 'none' }
+            };
+            const chartServ = new google.visualization.BarChart(document.getElementById('chart_servicios'));
+            chartServ.draw(dataServ, optionsServ);
+        }
+
+        if (dataCotRaw.length > 1) {
+    const dataCot = google.visualization.arrayToDataTable(dataCotRaw);
+            const optionsCot = {
+                chartArea: { width: '60%', height: '75%' },
+                colors: ['#212529'],
+                hAxis: { 
+                    title: 'Cantidad de Cotizaciones', 
+                    minValue: 0, 
+                    format: '0' 
+                },
+                vAxis: { 
+                    title: 'Empresa / Cliente' 
+                },
+                legend: { position: 'none' }
+            };
+            
+            const chartCot = new google.visualization.BarChart(document.getElementById('chart_cotizaciones'));
+            chartCot.draw(dataCot, optionsCot);
+        }
+    }
+
+    let resizeTimer;
+    window.addEventListener('resize', function () {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(drawDashboardCharts, 150);
+    });
+</script>

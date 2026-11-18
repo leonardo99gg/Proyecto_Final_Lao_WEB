@@ -1,0 +1,40 @@
+<h1>Gestión de Usuarios</h1>
+<div class="d-flex justify-content-end mb-3">
+    <a href="usuario.php?accion=create" class="btn btn-primary fw-semibold px-4">Registrar Usuario</a>
+</div>
+
+<div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col" class="py-3 px-4" style="width: 10%;">ID</th>
+                    <th scope="col" class="py-3 px-4" style="width: 65%;">Correo</th>
+                    <th scope="col" class="py-3 px-4 text-center" style="width: 25%;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($usuarios as $usuario): ?>
+                <tr>
+                    <th scope="row" class="px-4 fw-bold text-secondary">#<?php echo $usuario['id_usuario']; ?></th>
+                    <td class="px-4 fw-semibold text-primary"><?php echo htmlspecialchars($usuario['correo'], ENT_QUOTES, 'UTF-8'); ?></td>
+                    <td class="px-4 text-center">
+                        <div class="d-inline-flex gap-2 align-items-center">
+                            <a href="usuario.php?accion=update&id=<?php echo $usuario['id_usuario']; ?>" class="btn btn-sm btn-outline-primary px-3 rounded-2">
+                                Editar
+                            </a>
+                            <?php if (strcasecmp($usuario['correo'], '22031485@itcelaya.edu.mx') !== 0): ?>
+                                <a href="usuario.php?accion=delete&id=<?php echo $usuario['id_usuario']; ?>" class="btn btn-sm btn-outline-danger rounded-2 p-1 px-2" onclick="return confirm('¿Deseas eliminar este usuario?');" title="Eliminar">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            <?php else: ?>
+                                <span class="badge text-bg-secondary" title="Cuenta principal protegida">Cuenta principal</span>
+                            <?php endif; ?>
+                        </div>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
